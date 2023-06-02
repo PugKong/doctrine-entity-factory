@@ -1,0 +1,53 @@
+version: '3'
+
+dotenv: [.task.env, .task.env.dist]
+
+tasks:
+  exec:
+    internal: true
+    cmds:
+      - task: 'exec:{{.EXEC}}'
+        vars: { ENTRYPOINT: '{{.ENTRYPOINT}}', IMAGE: '{{.IMAGE}}', CMD: '{{.CMD}}' }
+  exec:local:
+    internal: true
+    cmds:
+      - '{{.ENTRYPOINT}} {{.CMD}}'
+  exec:docker:
+    internal: true
+    cmds:
+      - docker run -it --rm -v $(pwd):/app -w /app -u $UID:$GID --entrypoint={{.ENTRYPOINT}} {{.IMAGE}} {{.CMD}}
+
+  deps:
+    desc: Install dependencies
+    cmds:
+      - task: exec
+        vars: { ENTRYPOINT: composer, IMAGE: '{{.COMPOSER_IMAGE}}', CMD: install --no-scripts }
+    sources: [composer.json, composer.lock]
+
+  fmt:
+    desc: Format php files
+    cmds:
+      - task: exec
+        vars: { ENTRYPOINT: vendor/bin/php-cs-fixer, IMAGE: '{{.PHP_IMAGE}}', CMD: fix }
+
+  lint:
+    desc: Validate everything
+    deps:
+      - lint:composer
+      - lint:php
+  lint:composer:
+    desc: Validate composer
+    cmds:
+      - task: exec
+        vars: { ENTRYPOINT: composer, IMAGE: '{{.COMPOSER_IMAGE}}', CMD: validate }
+  lint:php:
+    desc: Validate php code
+    cmds:
+      - task: exec
+        vars: { ENTRYPOINT: vendor/bin/psalm, IMAGE: '{{.PHP_IMAGE}}' }
+
+  test:
+    desc: Run tests
+    cmds:
+      - task: exec
+        vars: { ENTRYPOINT: vendor/bin/phpunit, IMAGE: '{{.PHP_IMAGE}}' }

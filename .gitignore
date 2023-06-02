@@ -1,0 +1,9 @@
+.idea
+.phpunit.cache
+.psalm.cache
+.task
+vendor
+.php-cs-fixer.cache
+.phpunit.result.cache
+.task.env
+composer.lock

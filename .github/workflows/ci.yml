@@ -1,0 +1,38 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: setup php
+        uses: shivammathur/setup-php@v2
+        with: { php-version: '8.1' }
+      - name: install deps
+        uses: "ramsey/composer-install@v2"
+      - name: validate composer
+        run: composer validate
+      - name: run psalm
+        run: vendor/bin/psalm
+      - name: check formatting
+        run: vendor/bin/php-cs-fixer fix --diff --dry-run
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: setup php
+        uses: shivammathur/setup-php@v2
+        with: { php-version: '8.1', coverage: xdebug }
+      - name: install deps
+        uses: "ramsey/composer-install@v2"
+      - name: run tests
+        run: vendor/bin/phpunit --coverage-clover coverage.xml
+      - name: upload coverage
+        uses: codecov/codecov-action@v3
