@@ -29,8 +29,10 @@ abstract class EntityFactory
      * Returns a new copy of the factory with given mutator appended.
      *
      * @param callable(T):mixed $mutator
+     *
+     * @return static<T>
      */
-    public function with(callable $mutator): self
+    public function with(callable $mutator): static
     {
         $self = clone $this;
         $self->mutators[] = $mutator;

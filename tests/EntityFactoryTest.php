@@ -3,6 +3,7 @@
 namespace PugKong\Doctrine\EntityFactory\Tests;
 
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -10,7 +11,7 @@ use PHPUnit\Framework\TestCase;
  */
 class EntityFactoryTest extends TestCase
 {
-    private EntityManagerInterface $entityManager;
+    private MockObject&EntityManagerInterface $entityManager;
     private UserFactory $factory;
 
     protected function setUp(): void

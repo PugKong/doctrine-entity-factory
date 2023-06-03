@@ -8,6 +8,9 @@ class Faker
 {
     private const PHONES = ['+1-202-555-0117', '+1-202-555-0175'];
 
+    /**
+     * @psalm-var non-negative-int
+     */
     private int $calls = 0;
 
     public function phone(): string
